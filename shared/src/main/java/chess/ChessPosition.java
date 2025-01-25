@@ -7,8 +7,12 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessPosition {
+    int coolRow;
+    int coolCol;
 
     public ChessPosition(int row, int col) {
+        coolRow = row;
+        coolCol = col;
     }
 
     /**
@@ -16,7 +20,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        throw new RuntimeException("Not implemented");
+        return coolRow;
     }
 
     /**
@@ -24,6 +28,6 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        throw new RuntimeException("Not implemented");
+        return coolRow;
     }
 }
