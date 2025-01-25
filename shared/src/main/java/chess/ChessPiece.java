@@ -111,7 +111,7 @@ public class ChessPiece {
         linearMoves(board, myPosition, moves, -1, -1);
     }
 
-    public void knightMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
+    private void knightMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
         int[] rowOffsets = {-2, -1, 1, 2, 2, 1, -1, -2};
         int[] colOffsets = {1, 2, 2, 1, -1, -2, -2, -1};
 
