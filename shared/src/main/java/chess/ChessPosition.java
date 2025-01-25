@@ -30,4 +30,8 @@ public class ChessPosition {
     public int getColumn() {
         return coolCol;
     }
+
+    public ChessPosition move(int rowOffset, int colOffset) {
+        return new ChessPosition(coolRow + rowOffset + 1, coolCol + colOffset + 1);
+    }
 }
