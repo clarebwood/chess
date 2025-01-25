@@ -11,8 +11,8 @@ public class ChessPosition {
     int coolCol;
 
     public ChessPosition(int row, int col) {
-        coolRow = row;
-        coolCol = col;
+        coolRow = row - 1;
+        coolCol = col - 1;
     }
 
     /**
@@ -28,6 +28,6 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return coolRow;
+        return coolCol;
     }
 }
