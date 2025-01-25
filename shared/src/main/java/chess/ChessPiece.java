@@ -132,9 +132,9 @@ public class ChessPiece {
         linearMoves(board, myPosition, moves, 1, 0);
         linearMoves(board, myPosition, moves, -1, 0);
     }
-    private void linearMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves,
-                                int rowDir, int colDir) {
+    private void linearMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowDir, int colDir) {
         ChessPosition newPos = myPosition;
+
         while (true) {
             newPos = newPos.move(rowDir, colDir);
             if (board.isInBounds(newPos)) {
@@ -160,6 +160,7 @@ public class ChessPiece {
         if (board.isInBounds(forwardOne) && board.getPiece(forwardOne) == null) {
             pawnMove(board, moves, myPosition, forwardOne);
         }
+
         int startingRow = (color == ChessGame.TeamColor.WHITE) ? 1 : 6;
         if (myPosition.getRow() == startingRow) {
             ChessPosition forwardTwo = myPosition.move(2 * direction, 0);
@@ -167,29 +168,31 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, forwardTwo, null));
             }
         }
+
         int[] captureOffsets = {-1, 1};
         for (int offset : captureOffsets) {
             ChessPosition capturePos = myPosition.move(direction, offset);
             if (board.isInBounds(capturePos)) {
-                ChessPiece pieceAtCapture = board.getPiece(capturePos);
-                if (pieceAtCapture != null && pieceAtCapture.getTeamColor() != color) {
+                ChessPiece capturedPiece = board.getPiece(capturePos);
+                if (capturedPiece != null && capturedPiece.getTeamColor() != color) {
                     pawnMove(board, moves, myPosition, capturePos);
                 }
             }
         }
     }
+
     private void pawnMove(ChessBoard board, Collection<ChessMove> moves, ChessPosition start, ChessPosition end) {
         int promotionRow = (color == ChessGame.TeamColor.WHITE) ? 7 : 0;
 
         if (end.getRow() == promotionRow) {
-            moves.add(new ChessMove(start, end, ChessPiece.PieceType.QUEEN));
-            moves.add(new ChessMove(start, end, ChessPiece.PieceType.ROOK));
-            moves.add(new ChessMove(start, end, ChessPiece.PieceType.BISHOP));
-            moves.add(new ChessMove(start, end, ChessPiece.PieceType.KNIGHT));
+            for (ChessPiece.PieceType promotion : new ChessPiece.PieceType[]{ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT}) {
+                moves.add(new ChessMove(start, end, promotion));
+            }
         } else {
             moves.add(new ChessMove(start, end, null));
         }
     }
+
 
 
 
