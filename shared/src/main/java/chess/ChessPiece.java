@@ -155,31 +155,39 @@ public class ChessPiece {
 
     private void pawnMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
         int direction = (color == ChessGame.TeamColor.WHITE) ? 1 : -1;
+
         ChessPosition forwardOne = myPosition.move(direction, 0);
-
         if (board.isInBounds(forwardOne) && board.getPiece(forwardOne) == null) {
-            moves.add(new ChessMove(myPosition, forwardOne, null));
+            pawnMove(board, moves, myPosition, forwardOne);
         }
-
-        ChessPosition captureLeft = myPosition.move(direction, -1);
-        ChessPosition captureRight = myPosition.move(direction, 1);
-
-        if (board.isInBounds(captureLeft)) {
-            ChessPiece leftPiece = board.getPiece(captureLeft);
-            if (leftPiece != null && leftPiece.getTeamColor() != color) {
-                moves.add(new ChessMove(myPosition, captureLeft, null));
+        int startingRow = (color == ChessGame.TeamColor.WHITE) ? 1 : 6;
+        if (myPosition.getRow() == startingRow) {
+            ChessPosition forwardTwo = myPosition.move(2 * direction, 0);
+            if (board.isInBounds(forwardTwo) && board.getPiece(forwardOne) == null && board.getPiece(forwardTwo) == null) {
+                moves.add(new ChessMove(myPosition, forwardTwo, null));
             }
         }
-
-        if (board.isInBounds(captureRight)) {
-            ChessPiece rightPiece = board.getPiece(captureRight);
-            if (rightPiece != null && rightPiece.getTeamColor() != color) {
-                moves.add(new ChessMove(myPosition, captureRight, null));
+        int[] captureOffsets = {-1, 1};
+        for (int offset : captureOffsets) {
+            ChessPosition capturePos = myPosition.move(direction, offset);
+            if (board.isInBounds(capturePos)) {
+                ChessPiece pieceAtCapture = board.getPiece(capturePos);
+                if (pieceAtCapture != null && pieceAtCapture.getTeamColor() != color) {
+                    pawnMove(board, moves, myPosition, capturePos);
+                }
             }
         }
+    }
+    private void pawnMove(ChessBoard board, Collection<ChessMove> moves, ChessPosition start, ChessPosition end) {
+        int promotionRow = (color == ChessGame.TeamColor.WHITE) ? 7 : 0;
 
-        if ((color == ChessGame.TeamColor.WHITE && myPosition.getRow() == 6) || (color == ChessGame.TeamColor.BLACK && myPosition.getRow() == 1)) {
-            queenMoves(board, myPosition, moves);
+        if (end.getRow() == promotionRow) {
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(start, end, ChessPiece.PieceType.KNIGHT));
+        } else {
+            moves.add(new ChessMove(start, end, null));
         }
     }
 
