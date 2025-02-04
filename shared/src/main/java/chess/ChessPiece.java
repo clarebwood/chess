@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import static java.lang.Math.abs;
 
 /**
@@ -70,8 +71,8 @@ public class ChessPiece {
             this.board = board;
             this.myPosition = myPosition;
             this.myPiece = myPiece;
-            this.curCol = curCol;
-            this.curRow = curRow;
+            this.curCol = myPosition.getColumn();
+            this.curRow = myPosition.getRow();
         }
 
         public Collection<ChessMove> listMoves(){
@@ -243,4 +244,22 @@ public class ChessPiece {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ChessPiece{ color=" + pieceColor + ", type=" + type + "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(pieceColor, type);
+    }
 }
