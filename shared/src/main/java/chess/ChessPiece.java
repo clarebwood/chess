@@ -100,11 +100,11 @@ public class ChessPiece {
             return pawnList;
         }
 
-        private void checkPawnMove(int row, int col, ChessPosition newPos,Collection<ChessMove> pawnList) {
+        private void checkPawnMove(int row, int col, ChessPosition newPos, Collection<ChessMove> pawnList) {
             if (board.getPiece(newPos) == null) {
                 if (row == 1 || row == 8) {
-                    promotePawn (pawnList, newPos);
-                } else if (row == 2 || row == 7){
+                    promotePawn(pawnList, newPos);
+                } else if (row == 2 || row == 7) {
                     pawnList.add(new ChessMove(myPosition, newPos, null));
                     int i;
                     if (myPiece.getTeamColor()== ChessGame.TeamColor.BLACK) {
@@ -117,20 +117,23 @@ public class ChessPiece {
                 } else {
                     pawnList.add(new ChessMove(myPosition, newPos, null));
                 }
-                for (int i = -1; i <= 1; i++) {
-                    if (col >= 1 && col <= 8) {
-                        newPos = new ChessPosition(row, col);
-                    }
-                    if (board.getPiece(newPos)!= null && board.getPiece(newPos).getTeamColor() != myPiece.getTeamColor()) {
+            }
+            for (int i = -1; i <= 1; i += 2) {
+                int newCol = col + i;
+                if (newCol >= 1 && newCol <= 8) {
+                    ChessPosition diagonalPos = new ChessPosition(row, newCol);
+                    ChessPiece targetPiece = board.getPiece(diagonalPos);
+                    if (targetPiece != null && targetPiece.getTeamColor() != myPiece.getTeamColor()) {
                         if (row == 1 || row == 8) {
-                            promotePawn(pawnList, newPos);
+                            promotePawn(pawnList, diagonalPos);
                         } else {
-                            pawnList.add(new ChessMove(myPosition, newPos, null));
+                            pawnList.add(new ChessMove(myPosition, diagonalPos, null));
                         }
                     }
                 }
             }
         }
+
         private void promotePawn(Collection<ChessMove> pawnList, ChessPosition newPos) {
             pawnList.add(new ChessMove(myPosition, newPos, PieceType.ROOK));
             pawnList.add(new ChessMove(myPosition, newPos, PieceType.BISHOP));
@@ -146,7 +149,9 @@ public class ChessPiece {
                 row = curRow + i;
                 for (int x = -1; x <= 1; x++) {
                     col = curCol + x;
-                    if (!checkSpot(row, col, kingList)) {
+                    if(row == curRow && col == curCol) {
+                        continue;
+                    } else if (!checkSpot(row, col, kingList)) {
                         break;
                     }
                 }
