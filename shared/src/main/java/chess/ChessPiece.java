@@ -104,7 +104,7 @@ public class ChessPiece {
             if (board.getPiece(newPos) == null) {
                 if (row == 1 || row == 8) {
                     promotePawn(pawnList, newPos);
-                } else if (row == 2 || row == 7) {
+                } else if (curRow == 2 || curRow == 7) {
                     pawnList.add(new ChessMove(myPosition, newPos, null));
                     int i;
                     if (myPiece.getTeamColor()== ChessGame.TeamColor.BLACK) {
@@ -114,6 +114,9 @@ public class ChessPiece {
                     }
                     int doubleRow = row + i;
                     newPos = new ChessPosition(doubleRow, col);
+                    if(board.getPiece(newPos) == null){
+                        pawnList.add(new ChessMove(myPosition, newPos, null));
+                    }
                 } else {
                     pawnList.add(new ChessMove(myPosition, newPos, null));
                 }
@@ -193,10 +196,10 @@ public class ChessPiece {
 
         public Collection<ChessMove> knightMoves(){
             Collection<ChessMove> knightList = new ArrayList<>();
-            int row;
-            int col;
-            for (int i = -2; i <= 2; i++) {
-                for (int x = -2; x <= 2; x++) {
+            int[] row = {-2,-1,1,2};
+            int[] col = {-2,-1,1,2};
+            for (int i : row) {
+                for (int x : col) {
                     if (abs(i) == abs(x)){
                         continue;
                     } else if (!checkSpot(curRow + i, curCol + x, knightList)){
