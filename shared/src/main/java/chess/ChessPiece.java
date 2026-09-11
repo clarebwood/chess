@@ -135,10 +135,8 @@ public class ChessPiece {
                 int kingRow = curRow + r;
                 for (int c = -1; c<=1; c++) {
                     int kingCol = curCol + c;
-                    if (kingRow == curRow && kingCol == curCol) {
-                        continue;
-                    } else if (!checkSpot(kingRow, kingCol, kingList)) {
-                        break;
+                    if (kingRow != curRow || kingCol != curCol) {
+                        checkSpot(kingRow, kingCol, kingList);
                     }
 
                 }
