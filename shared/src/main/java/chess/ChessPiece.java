@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static java.lang.Math.abs;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -77,7 +79,7 @@ public class ChessPiece {
             return switch (myPiece.getPieceType()) {
                 case PieceType.BISHOP -> bishopMoves();
                 case PieceType.KING -> kingMoves();
-                case PieceType.KNIGHT -> bishopMoves();
+                case PieceType.KNIGHT -> knightMoves();
                 case PieceType.PAWN -> bishopMoves();
                 case PieceType.QUEEN -> bishopMoves();
                 case PieceType.ROOK -> bishopMoves();
@@ -142,6 +144,22 @@ public class ChessPiece {
                 }
             }
             return kingList;
+        }
+
+        public Collection<ChessMove> knightMoves() {
+            Collection<ChessMove> knightList = new ArrayList<>();
+            int knightRow [] = {-2, -1, 1, 2};
+            int knightCol [] = {-2, -1, 1, 2};
+
+            for (int r : knightRow) {
+                for (int c : knightCol) {
+                    if (abs(r) != abs(c)) {
+                        checkSpot(curRow + r, curCol+ c, knightList);
+                    }
+                }
+            }
+
+            return knightList;
         }
     }
 }
