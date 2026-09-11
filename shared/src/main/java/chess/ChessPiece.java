@@ -80,7 +80,7 @@ public class ChessPiece {
                 case PieceType.BISHOP -> bishopMoves();
                 case PieceType.KING -> kingMoves();
                 case PieceType.KNIGHT -> knightMoves();
-                case PieceType.PAWN -> bishopMoves();
+                case PieceType.PAWN -> pawnMoves();
                 case PieceType.QUEEN -> bishopMoves();
                 case PieceType.ROOK -> bishopMoves();
             };
@@ -158,6 +158,55 @@ public class ChessPiece {
             }
 
             return knightList;
+        }
+
+        public Collection<ChessMove> pawnMoves() {
+            Collection<ChessMove> pawnList = new ArrayList<>();
+            int direction;
+            int startRow;
+
+            if (myPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                direction = -1;
+                startRow = 7;
+            } else {
+                direction = 1;
+                startRow = 2;
+            }
+
+            int pawnRow = curRow + direction;
+            int doublePawnRow = curRow + (direction *2);
+
+            if (pawnRow >=1 && pawnRow <=8) {
+                ChessPosition newPawnPos = new ChessPosition(pawnRow, curCol);
+
+                if (board.getPiece(newPawnPos) == null) {
+                    pawnList.add(new ChessMove(myPosition, newPawnPos, null));
+
+                    if (curRow == startRow) {
+                        ChessPosition doublePawnPos = new ChessPosition(doublePawnRow, curCol);
+
+                        if (board.getPiece(doublePawnPos) == null) {
+                            pawnList.add(new ChessMove(myPosition, doublePawnPos, null));
+                        }
+                    }
+                }
+            }
+
+            int pawnCol [] = {curCol -1, curCol +1};
+
+            for (int c : pawnCol) {
+                if ( c >= 1 && c <= 8) {
+                    ChessPosition capturePos = new ChessPosition(pawnRow, c);
+                    ChessPiece target = board.getPiece((capturePos));
+
+                    if (target != null && target.getTeamColor() != myPiece.getTeamColor()) {
+                        pawnList.add(new ChessMove(myPosition, capturePos, null));
+                    }
+
+                }
+            }
+
+            return pawnList;
         }
     }
 }
