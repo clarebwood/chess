@@ -76,7 +76,7 @@ public class ChessPiece {
         public Collection<ChessMove> listMoves() {
             return switch (myPiece.getPieceType()) {
                 case PieceType.BISHOP -> bishopMoves();
-                case PieceType.KING -> bishopMoves();
+                case PieceType.KING -> kingMoves();
                 case PieceType.KNIGHT -> bishopMoves();
                 case PieceType.PAWN -> bishopMoves();
                 case PieceType.QUEEN -> bishopMoves();
@@ -125,6 +125,23 @@ public class ChessPiece {
                 }
             }
             return bishopList;
+        }
+
+        public Collection<ChessMove> kingMoves() {
+            Collection<ChessMove> kingList = new ArrayList<>();
+            for (int r = -1; r<=1; r++) {
+                int kingRow = curRow + r;
+                for (int c = -1; c<=1; c++) {
+                    int kingCol = curCol + c;
+                    if (kingRow == curRow && kingCol == curCol) {
+                        continue;
+                    } else if (!checkSpot(kingRow, kingCol, kingList)) {
+                        break;
+                    }
+
+                }
+            }
+            return kingList;
         }
     }
 }
