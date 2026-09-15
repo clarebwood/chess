@@ -81,8 +81,8 @@ public class ChessPiece {
                 case PieceType.KING -> kingMoves();
                 case PieceType.KNIGHT -> knightMoves();
                 case PieceType.PAWN -> pawnMoves();
-                case PieceType.QUEEN -> bishopMoves();
-                case PieceType.ROOK -> bishopMoves();
+                case PieceType.QUEEN -> queenMoves();
+                case PieceType.ROOK -> rookMoves();
             };
         };
         
@@ -225,6 +225,42 @@ public class ChessPiece {
             }
 
             return pawnList;
+        }
+
+        public Collection<ChessMove> queenMoves() {
+            Collection<ChessMove> queenList = new ArrayList<>();
+
+            queenList.addAll(bishopMoves());
+            queenList.addAll(rookMoves());
+
+            return queenList;
+        }
+
+        public Collection<ChessMove> rookMoves() {
+            Collection<ChessMove> rookList = new ArrayList<>();
+
+            for (int i = 1; i<=8; i++) {
+                if (!checkSpot(curRow + i, curCol, rookList)) {
+                    break;
+                }
+            }
+            for (int i = 1; i<=8; i++) {
+                if (!checkSpot(curRow - i, curCol, rookList)) {
+                    break;
+                }
+            }
+            for (int i = 1; i<=8; i++) {
+                if (!checkSpot(curRow, curCol + i, rookList)) {
+                    break;
+                }
+            }
+            for (int i = 1; i<=8; i++) {
+                if (!checkSpot(curRow, curCol - i, rookList)) {
+                    break;
+                }
+            }
+
+            return rookList;
         }
     }
 }
