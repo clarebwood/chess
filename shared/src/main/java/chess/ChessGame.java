@@ -61,7 +61,29 @@ public class ChessGame {
             return null;
         }
 
-        return piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> okMoves = new ArrayList<>();
+
+        for(ChessMove move : possibleMoves) {
+            ChessPosition startPos = move.getStartPosition();
+            ChessPosition endPos = move.getEndPosition();
+
+            ChessBoard ogBoard = board;
+            ChessBoard boardCopy = copyBoard(board);
+
+            boardCopy.addPiece(endPos, piece);
+            boardCopy.squares[startPos.getRow()-1][startPos.getColumn()-1] = null;
+
+            board = boardCopy;
+
+            if (!isInCheck(piece.getTeamColor())) {
+                okMoves.add(move);
+            }
+
+            board = ogBoard;
+        }
+
+        return okMoves;
     }
 
     /**
