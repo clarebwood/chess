@@ -55,7 +55,13 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return new ArrayList<>();
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null) {
+            return null;
+        }
+
+        return piece.pieceMoves(board, startPosition);
     }
 
     /**
@@ -115,5 +121,22 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    public ChessBoard copyBoard(ChessBoard board) {
+        ChessBoard copy = new ChessBoard();
+
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+                ChessPosition position = new ChessPosition(r, c);
+
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null) {
+                    copy.addPiece(position, piece);
+                }
+            }
+        }
+        return copy;
     }
 }
