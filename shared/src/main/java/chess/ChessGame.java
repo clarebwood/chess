@@ -23,7 +23,7 @@ public class ChessGame {
     boolean kingRookMoved;
     boolean queenRookMoved;
 
-
+    ChessMove lastMove;
 
     public ChessGame() {
 
@@ -37,6 +37,8 @@ public class ChessGame {
 
         kingRookMoved = false;
         queenRookMoved = false;
+
+        lastMove = null;
 
     }
 
@@ -97,6 +99,8 @@ public class ChessGame {
                 board = ogBoard;
             }
 
+            okMoves.addAll(enPassantMoves(startPosition));
+
             if (piece.getPieceType() == ChessPiece.PieceType.KING) {
                 okMoves.addAll(castlingMoves(startPosition));
             }
@@ -125,6 +129,8 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
 
+        boolean enPassant = isEnPassant(move);
+
         if (move.getPromotionPiece() != null) {
             piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         }
@@ -151,6 +157,11 @@ public class ChessGame {
             }
         }
 
+        if (enPassant) {
+            ChessPosition targetPawn = lastMove.getEndPosition();
+            board.squares[targetPawn.getRow()-1][targetPawn.getColumn()-1] = null;
+        }
+
         board.addPiece(endPos, piece);
         board.squares[startPos.getRow()-1][startPos.getColumn()-1] = null;
 
@@ -172,6 +183,7 @@ public class ChessGame {
             }
         }
 
+        lastMove = move;
 
         if (teamTurn == TeamColor.WHITE) {
             teamTurn = TeamColor.BLACK;
@@ -423,6 +435,74 @@ public class ChessGame {
         }
 
         return moves;
+    }
+
+    Collection<ChessMove> enPassantMoves(ChessPosition startPos) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessPiece piece = board.getPiece(startPos);
+
+        if (piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN && lastMove != null) {
+            ChessPosition lastStart = lastMove.getStartPosition();
+            ChessPosition lastEnd = lastMove.getEndPosition();
+            ChessPiece lastPiece = board.getPiece(lastEnd);
+
+            if (lastPiece != null && lastPiece.getPieceType() == ChessPiece.PieceType.PAWN
+                    && lastPiece.getTeamColor() != piece.getTeamColor()
+                    && abs(lastEnd.getRow() - lastStart.getRow()) == 2) {
+
+                int direction;
+
+                if (piece.getTeamColor() == TeamColor.WHITE) {
+                    direction = 1;
+                } else {
+                    direction = -1;
+                }
+
+                ChessPosition endPos = new ChessPosition(startPos.getRow() + direction, lastEnd.getColumn());
+
+                if (board.getPiece(endPos) == null) {
+                    ChessMove move = new ChessMove(startPos, endPos, null);
+
+                    ChessBoard ogBoard = board;
+                    ChessBoard boardCopy = copyBoard(board);
+
+                    boardCopy.addPiece(endPos, piece);
+                    boardCopy.squares[startPos.getRow()-1][startPos.getColumn()-1] = null;
+
+                    board = boardCopy;
+
+                    if (!isInCheck(piece.getTeamColor())) {
+                        moves.add(move);
+                    }
+
+                    board = ogBoard;
+                }
+            }
+        }
+
+        return moves;
+    }
+
+    public boolean isEnPassant(ChessMove move) {
+        if (lastMove == null) {
+            return false;
+        }
+
+        ChessPosition startPos = move.getStartPosition();
+        ChessPosition endPos = move.getEndPosition();
+        ChessPiece piece =board.getPiece(startPos);
+
+        if (startPos.getColumn() == endPos.getColumn() || board.getPiece(endPos) != null) {
+            return false;
+        }
+
+        ChessPosition lastStart = lastMove.getStartPosition();
+        ChessPosition lastEnd = lastMove.getEndPosition();
+        ChessPiece lastPiece = board.getPiece(lastEnd);
+
+        return (lastPiece != null && lastPiece.getPieceType() == ChessPiece.PieceType.PAWN
+                && lastPiece.getTeamColor() != piece.getTeamColor())
+                && abs(lastEnd.getRow() - lastStart.getRow()) == 2;
     }
 
     @Override
