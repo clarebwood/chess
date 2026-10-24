@@ -38,4 +38,36 @@ public class UserService {
 
         return new AuthResult(user.username(), authToken);
     }
+
+
+    public AuthResult login(LoginRequest request)
+            throws DataAccessException {
+
+        if (request == null || request.username() == null || request.password() == null) {
+            throw new DataAccessException("Invalid login information");
+        }
+
+        UserData user = new UserData(request.username(), request.password(), null);
+
+        UserData storedUser = userDAO.getUser(user);
+
+        if (storedUser == null || !storedUser.password().equals(request.password())) {
+            throw new DataAccessException("Invalid username or password");
+        }
+
+        String authToken = UUID.randomUUID().toString();
+        AuthData auth = new AuthData(authToken, storedUser.username());
+        authDAO.createAuth(auth);
+
+        return new AuthResult(storedUser.username(), authToken);
+    }
+
+    public void logout(String authToken) throws DataAccessException {
+        if (authToken == null || authDAO.getAuth(authToken) == null) {
+            throw new DataAccessException("Unauthorized");
+        }
+
+        authDAO.deleteAuth(authToken);
+    }
+
 }
