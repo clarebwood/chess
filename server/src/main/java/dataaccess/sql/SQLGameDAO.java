@@ -1,7 +1,10 @@
-package dataaccess;
+package dataaccess.sql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.GameDAO;
 import model.GameData;
 
 import java.sql.ResultSet;
@@ -11,7 +14,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class SQLGameDAO implements GameDAO{
+public class SQLGameDAO implements GameDAO {
 
     private final Gson gson = new Gson();
 

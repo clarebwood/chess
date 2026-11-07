@@ -1,10 +1,13 @@
-package dataaccess;
+package dataaccess.sql;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.UserDAO;
 import model.UserData;
 
 import java.sql.SQLException;
 
-public class SQLUserDAO implements UserDAO{
+public class SQLUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData u) throws DataAccessException {
