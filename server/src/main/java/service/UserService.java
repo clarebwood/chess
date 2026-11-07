@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.UUID;
 
@@ -24,7 +25,9 @@ public class UserService {
             throw new DataAccessException("Invalid user information");
         }
 
-        UserData user = new UserData(request.username(), request.password(), request.email());
+        String hashedPassword = BCrypt.hashpw(request.password(), BCrypt.gensalt());
+
+        UserData user = new UserData(request.username(), hashedPassword, request.email());
 
         if (userDAO.getUser(user) != null) {
             throw new DataAccessException("Username taken");
@@ -51,7 +54,7 @@ public class UserService {
 
         UserData storedUser = userDAO.getUser(user);
 
-        if (storedUser == null || !storedUser.password().equals(request.password())) {
+        if (storedUser == null || !BCrypt.checkpw(request.password(), storedUser.password())) {
             throw new DataAccessException("Invalid username or password");
         }
 
