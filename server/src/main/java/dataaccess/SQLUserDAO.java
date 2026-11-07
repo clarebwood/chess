@@ -35,6 +35,8 @@ public class SQLUserDAO implements UserDAO{
         try (var connection = DatabaseManager.getConnection()) {
             var statement = connection.prepareStatement(sql);
 
+            statement.setString(1, user.username());
+
             try (var resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return new UserData(resultSet.getString("username"),
