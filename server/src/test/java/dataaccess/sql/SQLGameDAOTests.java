@@ -1,6 +1,9 @@
-package dataaccess;
+package dataaccess.sql;
 
 import chess.*;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.SQLGameDAO;
 import model.GameData;
 import org.junit.jupiter.api.*;
 
