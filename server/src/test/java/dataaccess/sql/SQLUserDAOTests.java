@@ -42,7 +42,7 @@ public class SQLUserDAOTests {
     }
 
     @Test
-    public void DuplicateUser() throws DataAccessException {
+    public void duplicateUser() throws DataAccessException {
         UserData user = new UserData(
                 "testUser",
                 "password123",

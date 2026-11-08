@@ -40,7 +40,7 @@ public class SQLAuthDAOTests {
     }
 
     @Test
-    public void DuplicateAuth() throws DataAccessException {
+    public void duplicateAuth() throws DataAccessException {
         AuthData auth = new AuthData("token123", "alice");
 
         authDAO.createAuth(auth);
