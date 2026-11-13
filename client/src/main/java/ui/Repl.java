@@ -1,0 +1,157 @@
+package ui;
+
+import client.ServerException;
+import client.ServerFacade;
+import model.GameData;
+import service.AuthResult;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Repl {
+    private enum State{
+        PRELOGIN,
+        POSTLOGIN
+    }
+
+    private final ServerFacade server;
+    private final Scanner scanner;
+
+    private State state = State.PRELOGIN;
+    private boolean running;
+
+    private String authToken;
+    private String username;
+    private List<GameData> gameList = new ArrayList<>();
+
+    public Repl () {
+        this.server = new ServerFacade(8080);
+        this.scanner = new Scanner(System.in);
+        this.running = true;
+    }
+
+    public void run() {
+        while (running) {
+            System.out.print("\n>>> ");
+
+            String command = scanner.nextLine().trim().toLowerCase();
+
+            if (command.isEmpty()) {
+                continue;
+            }
+
+            try {
+                if (state == State.PRELOGIN) {
+                    switch (command) {
+                        case "help" -> preloginHelp();
+                        case "login" -> login();
+                        case "register" -> register();
+                        case "quit" -> running = false;
+                        default -> System.out.println("Invalid. Type \"help\" for available commands!");
+                    }
+                } else if (state == State.POSTLOGIN) {
+                    switch (command) {
+                        case "help" -> postloginHelp();
+                        case "logout" -> logout();
+                        case "create" -> create();
+                        case "list" -> list();
+                        case "play" -> play();
+                        case "observe" -> observe();
+                        case "quit" -> running = false;
+                        default -> System.out.println("Invalid. Type \"help\" for available commands!");
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Something went wrong :(");
+            }
+        }
+        System.out.println("Goodbye!");
+    }
+
+    private void preloginHelp() {
+        System.out.println("""
+                help        - Show available commands
+                login       - Log in to existing account
+                register    - Create new account
+                quit        - Exit
+                """);
+    }
+
+    private void login() {
+        try {
+            System.out.println("Username: ");
+            String user = scanner.nextLine();
+
+            System.out.println("Password: ");
+            String password = scanner.nextLine();
+
+            AuthResult auth = server.login(user, password);
+            authToken = auth.authToken();
+            username = auth.username();
+
+            state = State.POSTLOGIN;
+            System.out.println("Logged in as " + username + "!");
+        } catch (Exception e) {
+            System.out.println("Invalid username and password");
+        }
+    }
+
+    private void register() {
+        try {
+            System.out.println("Username: ");
+            String user = scanner.nextLine();
+
+            System.out.println("Password: ");
+            String password = scanner.nextLine();
+
+            System.out.println("Email: ");
+            String email = scanner.nextLine();
+
+            AuthResult auth = server.register(user, password, email);
+            authToken = auth.authToken();
+            username = auth.username();
+
+            state = State.POSTLOGIN;
+            System.out.println("Registered as " + username + "!");
+        } catch (ServerException e) {
+            if (e.getMessage().contains("Username taken")) {
+                System.out.println("Username already exists");
+            } else {
+                System.out.println("Registration failed");
+            }
+        }
+    }
+
+    private void postloginHelp() {
+        System.out.println("""
+                help        - Show available commands
+                logout      - Log out
+                create      - Create new game
+                list        - List existing games
+                play        - Join a game
+                observe     - Observe a game
+                quit        - Exit
+                """);
+    }
+
+    private void logout() {
+
+    }
+
+    private void create() {
+
+    }
+
+    private void list() {
+
+    }
+
+    private void play() {
+
+    }
+
+    private void observe() {
+
+    }
+}
