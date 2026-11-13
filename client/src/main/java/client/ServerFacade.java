@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import model.GameData;
 import service.AuthResult;
+import service.CreateGameRequest;
 import service.ListGamesResult;
 
 import java.io.IOException;
@@ -79,5 +80,29 @@ public class ServerFacade {
         ListGamesResult result = gson.fromJson(response, ListGamesResult.class);
 
         return result.games();
+    }
+
+    private record CreateGameResult(int gameID) {}
+
+    public int createGame(String authToken, String gameName) throws ServerException {
+        CreateGameRequest request = new CreateGameRequest(gameName);
+        String response = request("POST", "/game", authToken, request);
+
+        CreateGameResult result = gson.fromJson(response, CreateGameResult.class);
+        return result.gameID();
+    }
+
+    public void joinGame(String authToken, String playerColor, int gameID) throws ServerException {
+        var body = Map.of("gameID", gameID, "playerColor", playerColor);
+        request("PUT", "/game", authToken, body);
+    }
+
+    public void observeGame(String authToken, int gameID) throws ServerException {
+        Map<String, Object> body = new java.util.HashMap<>();
+
+        body.put("gameID", gameID);
+        body.put("playerColor", null);
+
+        request("PUT", "/game", authToken, body);
     }
 }
