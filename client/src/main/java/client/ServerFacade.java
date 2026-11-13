@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import model.GameData;
 import service.AuthResult;
 import service.CreateGameRequest;
@@ -47,7 +48,8 @@ public class ServerFacade {
             int status = response.statusCode();
 
             if (status < 200 || status >= 300) {
-                throw new ServerException("Request Failed" + status);
+                String errorMessage = getError(response.body());
+                throw new ServerException(errorMessage);
             }
 
             return response.body();
@@ -55,6 +57,17 @@ public class ServerFacade {
             throw new ServerException("Unable to connect to chess server.", e);
         }
 
+    }
+
+    private String getError (String body) {
+        try {
+            JsonObject json = gson.fromJson( body, JsonObject.class );
+
+            if (json != null && json.has("message")) {
+                return json.get("message").getAsString();
+            }
+        } catch (Exception ignored) {}
+        return "Unable to complete request";
     }
 
     public AuthResult register (String username, String password, String email) throws ServerException {
