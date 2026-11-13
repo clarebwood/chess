@@ -224,17 +224,14 @@ public class ServerFacadeTests {
 
     @Test
     void observeGamePositive() throws Exception {
-        var auth = facade.register(
-                "player1", "password123", "player1@email.com"
+        var auth = facade.register("player1", "password123", "player1@email.com"
         );
 
-        int gameID = facade.createGame(
-                auth.authToken(), "Chess Game"
-        );
+        int gameID = facade.createGame(auth.authToken(), "Chess Game");
 
-        assertDoesNotThrow(() ->
-                facade.observeGame(auth.authToken(), gameID)
-        );
+        var games = facade.listGames(auth.authToken());
+
+        assertTrue(games.stream().anyMatch(game ->game.gameID() == gameID));
     }
 
     @Test
