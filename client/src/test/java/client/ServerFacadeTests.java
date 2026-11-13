@@ -134,4 +134,132 @@ public class ServerFacadeTests {
         assertTrue(games.isEmpty());
     }
 
+    @Test
+    void createGamePositive() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        int gameID = facade.createGame(
+                auth.authToken(), "My Chess Game"
+        );
+
+        assertTrue(gameID > 0);
+    }
+
+    @Test
+    void createGameNegative() {
+        assertThrows(ServerException.class, () ->
+                facade.createGame("invalid-token", "Chess Game")
+        );
+    }
+
+    @Test
+    void joinGamePositive() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        int gameID = facade.createGame(
+                auth.authToken(), "Chess Game"
+        );
+
+        assertDoesNotThrow(() ->
+                facade.joinGame(
+                        auth.authToken(), "WHITE", gameID
+                )
+        );
+    }
+
+    @Test
+    void joinGameNegative() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        assertThrows(ServerException.class, () ->
+                facade.joinGame(
+                        auth.authToken(), "WHITE", 999999
+                )
+        );
+    }
+
+    @Test
+    void joinGameBlack() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        var auth2 = facade.register(
+                "player2", "password456", "player2@email.com"
+        );
+
+        int gameID = facade.createGame(
+                auth.authToken(), "Chess Game"
+        );
+
+        assertDoesNotThrow(() ->
+                facade.joinGame(
+                        auth2.authToken(), "BLACK", gameID
+                )
+        );
+    }
+
+    @Test
+    void joinGameInvalid() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        int gameID = facade.createGame(
+                auth.authToken(), "Chess Game"
+        );
+
+        assertThrows(ServerException.class, () ->
+                facade.joinGame(
+                        "invalid-token", "WHITE", gameID
+                )
+        );
+    }
+
+    @Test
+    void observeGamePositive() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        int gameID = facade.createGame(
+                auth.authToken(), "Chess Game"
+        );
+
+        assertDoesNotThrow(() ->
+                facade.observeGame(auth.authToken(), gameID)
+        );
+    }
+
+    @Test
+    void observeGameNegative() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        assertThrows(ServerException.class, () ->
+                facade.observeGame(auth.authToken(), 999999)
+        );
+    }
+
+    @Test
+    void observeGameInvalid() throws Exception {
+        var auth = facade.register(
+                "player1", "password123", "player1@email.com"
+        );
+
+        int gameID = facade.createGame(
+                auth.authToken(), "Chess Game"
+        );
+
+        assertThrows(ServerException.class, () ->
+                facade.observeGame("invalid-token", gameID)
+        );
+    }
 }
