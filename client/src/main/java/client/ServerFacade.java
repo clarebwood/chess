@@ -2,10 +2,9 @@ package client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import model.AuthData;
 import model.GameData;
-import service.AuthResult;
-import service.CreateGameRequest;
-import service.ListGamesResult;
+import model.UserData;
 
 import java.io.IOException;
 import java.net.URI;
@@ -70,18 +69,18 @@ public class ServerFacade {
         return "Unable to complete request";
     }
 
-    public AuthResult register (String username, String password, String email) throws ServerException {
-        var body = Map.of("username", username, "password", password, "email", email);
+    public AuthData register (String username, String password, String email) throws ServerException {
+        UserData body = new UserData(username, password, email);
         String response = request("POST", "/user", null, body);
 
-        return gson.fromJson(response, AuthResult.class);
+        return gson.fromJson(response, AuthData.class);
     }
 
-    public AuthResult login (String username, String password) throws ServerException {
-        var body = Map.of("username", username, "password", password);
+    public AuthData login (String username, String password) throws ServerException {
+        UserData body = new UserData(username, password, null);
         var response = request("POST", "/session", null, body);
 
-        return gson.fromJson(response, AuthResult.class);
+        return gson.fromJson(response, AuthData.class);
     }
 
     public void logout (String authToken) throws ServerException {
@@ -89,20 +88,22 @@ public class ServerFacade {
     }
 
     public Collection<GameData> listGames(String authToken) throws ServerException {
-        var response = request("GET", "/game", authToken, null);
-        ListGamesResult result = gson.fromJson(response, ListGamesResult.class);
+        String response = request("GET", "/game", authToken, null);
+        JsonObject json = gson.fromJson(response, JsonObject.class);
 
-        return result.games();
+        GameData[] games = gson.fromJson(json.get("games"), GameData[].class);
+
+        return new java.util.ArrayList<>(java.util.Arrays.asList(games));
     }
 
     private record CreateGameResult(int gameID) {}
 
     public int createGame(String authToken, String gameName) throws ServerException {
-        CreateGameRequest request = new CreateGameRequest(gameName);
-        String response = request("POST", "/game", authToken, request);
+        Map<String, String> body = Map.of("gameName", gameName);
+        String response = request("POST", "/game", authToken, body);
 
-        CreateGameResult result = gson.fromJson(response, CreateGameResult.class);
-        return result.gameID();
+        JsonObject json = gson.fromJson(response, JsonObject.class);
+        return json.get("gameID").getAsInt();
     }
 
     public void joinGame(String authToken, String playerColor, int gameID) throws ServerException {

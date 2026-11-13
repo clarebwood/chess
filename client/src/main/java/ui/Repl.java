@@ -3,7 +3,7 @@ package ui;
 import client.ServerException;
 import client.ServerFacade;
 import model.GameData;
-import service.AuthResult;
+import model.AuthData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,7 +87,7 @@ public class Repl {
             System.out.println("Password: ");
             String password = scanner.nextLine();
 
-            AuthResult auth = server.login(user, password);
+            AuthData auth = server.login(user, password);
             authToken = auth.authToken();
             username = auth.username();
 
@@ -109,7 +109,7 @@ public class Repl {
             System.out.println("Email: ");
             String email = scanner.nextLine();
 
-            AuthResult auth = server.register(user, password, email);
+            AuthData auth = server.register(user, password, email);
             authToken = auth.authToken();
             username = auth.username();
 
