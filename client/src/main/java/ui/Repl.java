@@ -234,6 +234,7 @@ public class Repl {
 
             server.joinGame(authToken, color, game.gameID());
             System.out.println("Game joined");
+            BoardDisplay.draw(color.equals("WHITE"));
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid game number");
@@ -261,6 +262,7 @@ public class Repl {
 
             server.observeGame(authToken, game.gameID());
             System.out.println("Game joined as an observer");
+            BoardDisplay.draw(true);
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid game number");
