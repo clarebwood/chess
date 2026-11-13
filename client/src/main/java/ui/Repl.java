@@ -200,10 +200,72 @@ public class Repl {
     }
 
     private void play() {
+        list();
+        if (gameList.isEmpty()) {
+            return;
+        }
 
+        try {
+            System.out.println("Game Number: ");
+            int number = Integer.parseInt(scanner.nextLine());
+
+            if (number < 1 || number > gameList.size()) {
+                System.out.println("Invalid game number");
+                return;
+            }
+
+            System.out.println("WHITE or BLACK?: ");
+            String color = scanner.nextLine().trim().toUpperCase();
+
+            while (!color.equals("WHITE") && !color.equals("BLACK")) {
+                System.out.println("Invalid color. WHITE or BLACK?: ");
+                color = scanner.nextLine().trim().toUpperCase();
+            }
+
+            GameData game = gameList.get(number -1 );
+
+            if (color.equals("WHITE") && game.whiteUsername() != null) {
+                System.out.println("White already taken");
+                return;
+            } else if (color.equals("BLACK") && game.blackUsername() != null) {
+                System.out.println("Black already taken");
+                return;
+            }
+
+            server.joinGame(authToken, color, game.gameID());
+            System.out.println("Game joined");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid game number");
+        } catch (Exception e) {
+            System.out.println("Unable to join game");
+        }
     }
 
     private void observe() {
+        list();
+        if (gameList.isEmpty()) {
+            return;
+        }
 
+        try {
+            System.out.println("Game Number: ");
+            int number = Integer.parseInt(scanner.nextLine());
+
+            if (number < 1 || number > gameList.size()) {
+                System.out.println("Invalid game number");
+                return;
+            }
+
+            GameData game = gameList.get(number -1 );
+
+            server.observeGame(authToken, game.gameID());
+            System.out.println("Game joined as an observer");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid game number");
+        } catch (Exception e) {
+            System.out.println("Unable to observe game");
+        }
     }
 }
