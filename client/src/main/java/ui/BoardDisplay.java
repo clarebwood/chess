@@ -6,28 +6,16 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 
 public class BoardDisplay {
-    private static final String reset = "\u001B[0m";
-    private static final String light = "\u001B[107m";
-    private static final String dark = "\u001B[100m";
+    private static final String RESET = "\u001B[0m";
+    private static final String LIGHT = "\u001B[107m";
+    private static final String DARK = "\u001B[100m";
 
     public static void draw(boolean whiteView) {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
 
         System.out.println();
-        System.out.print("   ");
-
-        for (int col = 0; col < 8; col++) {
-            char vertical;
-            if (whiteView) {
-                vertical = (char) ('a' + col);
-            } else {
-                vertical = (char) ('h' - col);
-            }
-            System.out.print(" " + vertical + " ");
-        }
-
-        System.out.println();
+        printColumnLabels(whiteView);
 
         for (int row = 0; row < 8; row++) {
             int horizontal;
@@ -48,26 +36,13 @@ public class BoardDisplay {
                 String symbol = getSymbol(piece);
 
                 boolean lightSquare = (horizontal + actualCol) % 2 != 0;
-                String background = lightSquare ? light : dark;
+                String background = lightSquare ? LIGHT : DARK;
 
-                System.out.print(background + " " + symbol + " " + reset);
+                System.out.print(background + " " + symbol + " " + RESET);
             }
             System.out.println(" " + horizontal);
         }
-
-        System.out.print("   ");
-
-        for (int col = 0; col < 8; col++) {
-            char vertical;
-            if (whiteView) {
-                vertical = (char) ('a' + col);
-            } else {
-                vertical = (char) ('h' - col);
-            }
-            System.out.print(" " + vertical + " ");
-        }
-
-        System.out.println();
+        printColumnLabels(whiteView);
     }
 
     private static String getSymbol(ChessPiece piece) {
@@ -85,5 +60,19 @@ public class BoardDisplay {
             case ChessPiece.PieceType.QUEEN -> white ? "♕" : "♛";
             case ChessPiece.PieceType.ROOK -> white ? "♖" : "♜";
         };
+    }
+
+    private static void printColumnLabels(boolean whiteView) {
+        System.out.print("   ");
+
+        for (int col = 0; col < 8; col++) {
+            char vertical = whiteView
+                    ? (char) ('a' + col)
+                    : (char) ('h' - col);
+
+            System.out.print(" " + vertical + " ");
+        }
+
+        System.out.println();
     }
 }
