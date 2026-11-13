@@ -6,6 +6,7 @@ import model.GameData;
 import service.AuthResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -136,15 +137,66 @@ public class Repl {
     }
 
     private void logout() {
+        try {
+            server.logout(authToken);
 
+            authToken = null;
+            username = null;
+            gameList.clear();
+
+            state = State.PRELOGIN;
+            System.out.println("Logged out");
+        } catch (Exception e) {
+            System.out.println("Logout failed");
+        }
     }
 
     private void create() {
+        System.out.println("Game Name: ");
+        String gameName = scanner.nextLine().trim();
 
+        if (gameName .isEmpty()) {
+            System.out.println("Game name cannot be blank");
+            return;
+        }
+
+        try {
+            server.createGame(authToken, gameName);
+            System.out.println("Game created");
+
+        } catch (Exception e) {
+            System.out.println("Unable to create game");
+        }
     }
 
     private void list() {
+        gameList.clear();
 
+        try {
+            Collection<GameData> games = server.listGames(authToken);
+            gameList = new ArrayList<>(games);
+
+            if (gameList.isEmpty()) {
+                System.out.println("No games currently");
+                return;
+            }
+
+            StringBuilder output = new StringBuilder("Games: \n");
+
+            for (int i = 0; i < gameList.size(); i++) {
+                GameData game = gameList.get(i);
+
+                String white = game.whiteUsername() == null ? "None" : game.whiteUsername();
+                String black = game.blackUsername() == null ? "None" : game.blackUsername();
+
+                output.append(String.format(
+                        "%d. %s | White: %s | Black: %s%n", i + 1, game.gameName(), white, black ));
+            }
+            System.out.println(output.toString().stripTrailing());
+
+        } catch (Exception e) {
+            System.out.println("Unable to retrieve games");
+        }
     }
 
     private void play() {
