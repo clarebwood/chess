@@ -1,12 +1,17 @@
 package client;
 
 import com.google.gson.Gson;
+import model.GameData;
+import service.AuthResult;
+import service.ListGamesResult;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collection;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverURL;
@@ -49,5 +54,30 @@ public class ServerFacade {
             throw new ServerException("Unable to connect to chess server.", e);
         }
 
+    }
+
+    public AuthResult register (String username, String password, String email) throws ServerException {
+        var body = Map.of("username", username, "password", password, "email", email);
+        String response = request("POST", "/user", null, body);
+
+        return gson.fromJson(response, AuthResult.class);
+    }
+
+    public AuthResult login (String username, String password) throws ServerException {
+        var body = Map.of("username", username, "password", password);
+        var response = request("POST", "/session", null, body);
+
+        return gson.fromJson(response, AuthResult.class);
+    }
+
+    public void logout (String authToken) throws ServerException {
+        request("DELETE", "/session", authToken, null);
+    }
+
+    public Collection<GameData> listGames(String authToken) throws ServerException {
+        var response = request("GET", "/game", authToken, null);
+        ListGamesResult result = gson.fromJson(response, ListGamesResult.class);
+
+        return result.games();
     }
 }
