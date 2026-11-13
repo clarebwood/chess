@@ -66,7 +66,11 @@ public class GameService {
 
         String playerColor = request.playerColor();
 
-        if (playerColor == null || (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
+        if (playerColor == null) {
+            return;
+        }
+
+        if ((!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
             throw new DataAccessException("Invalid player color");
         }
 
