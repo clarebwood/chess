@@ -103,9 +103,7 @@ public class ChessGame {
 
             okMoves.addAll(enPassantMoves(startPosition));
 
-            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                okMoves.addAll(castlingMoves(startPosition));
-            }
+
         }
         return okMoves;
     }
@@ -350,91 +348,6 @@ public class ChessGame {
         return copy;
     }
 
-    Collection<ChessMove> castlingMoves(ChessPosition startPos) {
-        Collection<ChessMove> moves = new ArrayList<>();
-
-        ChessPiece king = board.getPiece(startPos);
-        TeamColor color = king.getTeamColor();
-
-        int startRow;
-
-        if (color == TeamColor.WHITE) {
-            startRow = 1;
-        } else {
-            startRow = 8;
-        }
-
-        if (startRow != startPos.getRow()
-                || startPos.getColumn() != 5) {
-            return moves;
-        }
-
-        boolean kingMoved = false;
-
-        if (color == TeamColor.WHITE) {
-            if (whiteKingMoved) {
-                kingMoved = true;
-            }
-        } else {
-            if (blackKingMoved) {
-                kingMoved = true;
-            }
-        }
-
-        if (kingMoved || isInCheck(color)) {
-            return moves;
-        }
-
-        ChessPosition kingRookPosition = new ChessPosition(startRow, 8);
-        ChessPiece kingRook = board.getPiece(kingRookPosition);
-
-        ChessPosition queenRookPosition = new ChessPosition(startRow, 1);
-        ChessPiece queenRook = board.getPiece(queenRookPosition);
-
-        if (!kingRookMoved
-                && kingRook != null
-                && kingRook.getPieceType() == ChessPiece.PieceType.ROOK
-                && board.getPiece(new ChessPosition(startRow, 6)) == null
-                && board.getPiece(new ChessPosition(startRow, 7)) == null
-                && isSafeCastlingSquare(startPos, king, startRow, 6, color)
-                && isSafeCastlingSquare(startPos, king, startRow, 7, color)) {
-            ChessPosition destination = new ChessPosition(startRow, 7);
-            moves.add(new ChessMove(startPos, destination, null));
-        }
-
-        if (!queenRookMoved
-                && queenRook != null
-                && queenRook.getPieceType() == ChessPiece.PieceType.ROOK
-                && board.getPiece(new ChessPosition(startRow, 2)) == null
-                && board.getPiece(new ChessPosition(startRow, 3)) == null
-                && board.getPiece(new ChessPosition(startRow, 4)) == null
-                && isSafeCastlingSquare(startPos, king, startRow, 4, color)
-                && isSafeCastlingSquare(startPos, king, startRow, 3, color)) {
-            ChessPosition destination = new ChessPosition(startRow, 3);
-            moves.add(new ChessMove(startPos, destination, null));
-        }
-
-        return moves;
-    }
-
-    private boolean isSafeCastlingSquare(ChessPosition startPos,
-                                         ChessPiece king,
-                                         int startRow,
-                                         int column,
-                                         TeamColor color) {
-        ChessBoard ogBoard = board;
-        ChessBoard boardCopy = copyBoard(board);
-        ChessPosition position = new ChessPosition(startRow, column);
-
-        boardCopy.addPiece(position, king);
-        boardCopy.squares[startRow - 1][startPos.getColumn() - 1] = null;
-
-        board = boardCopy;
-        boolean safe = !isInCheck(color);
-        board = ogBoard;
-
-        return safe;
-    }
 
     Collection<ChessMove> enPassantMoves(ChessPosition startPos) {
         Collection<ChessMove> moves = new ArrayList<>();
