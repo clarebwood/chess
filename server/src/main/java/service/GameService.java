@@ -66,6 +66,13 @@ public class GameService {
 
         String playerColor = request.playerColor();
 
+        if (request.observer()) {
+            if (playerColor != null) {
+                throw new DataAccessException("Invalid observer request");
+            }
+            return;
+        }
+
         if (!"WHITE".equals(playerColor) && !"BLACK".equals(playerColor)) {
             throw new DataAccessException("Invalid player color");
         }

@@ -61,7 +61,7 @@ class GameServiceTest {
     @Test
     void joinGameAsWhite() throws DataAccessException {
         int gameID = gameDAO.createGame("Test Game");
-        JoinGameRequest request = new JoinGameRequest(gameID, "WHITE");
+        JoinGameRequest request = new JoinGameRequest(gameID, "WHITE", false);
 
         gameService.joinGame("valid-token", request);
 
@@ -73,7 +73,7 @@ class GameServiceTest {
     @Test
     void joinGameAsBlack() throws DataAccessException {
         int gameID = gameDAO.createGame("Test Game");
-        JoinGameRequest request = new JoinGameRequest(gameID, "BLACK");
+        JoinGameRequest request = new JoinGameRequest(gameID, "BLACK", false);
 
         gameService.joinGame("valid-token", request);
 
@@ -85,14 +85,14 @@ class GameServiceTest {
     @Test
     void joinGameWithInvalidColor() throws DataAccessException {
         int gameID = gameDAO.createGame("Test Game");
-        JoinGameRequest request = new JoinGameRequest(gameID, "GREEN");
+        JoinGameRequest request = new JoinGameRequest(gameID, "GREEN", false);
 
         assertThrows(DataAccessException.class, () -> gameService.joinGame("valid-token", request));
     }
 
     @Test
     void joinGameThatDoesNotExist() {
-        JoinGameRequest request = new JoinGameRequest(999, "WHITE");
+        JoinGameRequest request = new JoinGameRequest(999, "WHITE", false);
 
         assertThrows(DataAccessException.class, () -> gameService.joinGame("valid-token", request));
     }
@@ -101,15 +101,15 @@ class GameServiceTest {
     void joinGameWithOccupiedSlot() throws DataAccessException {
         int gameID = gameDAO.createGame("Test Game");
 
-        gameService.joinGame("valid-token", new JoinGameRequest(gameID, "WHITE"));
+        gameService.joinGame("valid-token", new JoinGameRequest(gameID, "WHITE", false));
 
-        assertThrows(DataAccessException.class, () -> gameService.joinGame("valid-token", new JoinGameRequest(gameID, "WHITE")));
+        assertThrows(DataAccessException.class, () -> gameService.joinGame("valid-token", new JoinGameRequest(gameID, "WHITE", false)));
     }
 
     @Test
     void joinGameWithoutAuthentication() throws DataAccessException {
         int gameID = gameDAO.createGame("Test Game");
-        JoinGameRequest request = new JoinGameRequest(gameID, "WHITE");
+        JoinGameRequest request = new JoinGameRequest(gameID, "WHITE", false);
 
         assertThrows(DataAccessException.class, () -> gameService.joinGame("invalid-token", request));
     }
