@@ -1,4 +1,5 @@
-import client.ServerException;
+package client;
+
 import dataaccess.DataAccessException;
 import dataaccess.sql.SQLAuthDAO;
 import dataaccess.sql.SQLGameDAO;
@@ -6,7 +7,6 @@ import dataaccess.sql.SQLUserDAO;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import client.ServerFacade;
 
 import java.util.Collection;
 
